@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>祝图图宝贝圣诞快乐 - Merry Christmas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 全局与背景 --- */
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #000;
+            /* 背景光影 */
+            background-image:
+                radial-gradient(circle at 50% 85%, rgba(120, 30, 0, 0.45) 0%, rgba(0, 0, 0, 0) 60%),
+                radial-gradient(ellipse at center, #150a10 0%, #050508 60%, #000000 100%);
+        }
+
+        /* 全屏暗角 */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.95) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0; left: 0; z-index: 1; pointer-events: none;
+        }
+
+        /* --- UI层 --- */
+        .ui-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            pointer-events: none;
+        }
+
+        /* --- 标题组 --- */
+        .title-group {
+            margin-top: 8vh;
+            text-align: center;
+            pointer-events: none;
+            /* 增加浮动动画，让文字看起来悬浮在空中 */
+            animation: floatTitle 4s ease-in-out infinite;
+        }
+
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .greeting-title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+            letter-spacing: 4px;
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           重点修改：Merry Christmas 艺术字样式 (方案一)
+           ========================================= */
+        .art-subtitle {
+            /* 使用 Cinzel Decorative 字体，极具装饰感 */
+            font-family: 'Cinzel Decorative', cursive; 
+            font-size: 4em; /* 字体调大 */
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: 2px; /* 增加字间距，更显大气 */
+            
+            /* 核心：金色流光渐变文字效果 */
+            background: linear-gradient(to bottom, #fffbcc 0%, #f1c40f 40%, #b38806 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* 让文字透明，显示背景的渐变 */
+            
+            /* 增加辉光滤镜 */
+            filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.4)) drop-shadow(0 0 20px rgba(0,0,0,0.8));
+            
+            transform: rotate(0deg); /* 这种字体不适合倾斜，摆正更庄重 */
+            padding: 10px;
+        }
+
+        /* --- 底部许愿控制台 --- */
+        .wish-console {
+            margin-bottom: 12vh;
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 25px 40px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 350px;
+            transition: all 0.5s ease;
+        }
+        
+        #inputGroup {
+            display: flex; gap: 15px; align-items: center; transition: opacity 0.5s ease;
+        }
+
+        input[type="text"] {
+            background: rgba(0,0,0,0.4);
+            border: none;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.6);
+            padding: 12px 15px;
+            color: #fff; /* 字体改亮白，对比度更高 */
+            font-size: 18px;
+            width: 220px;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s;
+            border-radius: 5px 5px 0 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        input[type="text"]::placeholder { color: rgba(255, 255, 255, 0.5); }
+        input[type="text"]:focus { border-bottom-color: #fff; background: rgba(0,0,0,0.6); }
+
+        button#wishBtn {
+            padding: 12px 35px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #d4af37, #fceba7, #d4af37); /* 增加金属质感渐变 */
+            background-size: 200% auto;
+            color: #3e2723;
+            font-weight: 800;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transition: 0.3s;
+            animation: shine 3s infinite linear; /* 按钮流动光效 */
+        }
+        
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        button#wishBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+        }
+
+        #successMessage {
+            display: none;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px #d4af37, 0 0 20px #d4af37, 0 0 40px #e74c3c;
+            animation: glowPulse 0.8s infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            from { transform: scale(1); text-shadow: 0 0 20px #d4af37; }
+            to { transform: scale(1.02); text-shadow: 0 0 40px #ffff00, 0 0 80px #e74c3c; }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .title-group { margin-top: 10vh; }
+            .greeting-title { font-size: 1.4em; }
+            .art-subtitle { font-size: 2.5em; } /* 移动端字体调小 */
+            .wish-console { padding: 20px; width: 85%; margin-bottom: 15vh;}
+            #inputGroup { flex-direction: column; width: 100%; }
+            input[type="text"] { width: 100%; }
+            button#wishBtn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="christmasCanvas"></canvas>
+
+    <div class="ui-container">
+        <div class="title-group">
+            <h1 class="greeting-title">🎄 祝图图宝贝圣诞快乐 🎄</h1>
+            <h2 class="art-subtitle">Merry Christmas</h2>
+        </div>
+        
+        <div class="wish-console">
+            <div id="inputGroup">
+                <input type="text" id="wishInput" placeholder="在此写下你的愿望...">
+                <button id="wishBtn">✨ 许愿 ✨</button>
+            </div>
+            <div id="successMessage">✨ 图图的愿望一定会实现的！✨</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        //  全局状态
+        // ============================================
+        let isHyperMode = false;
+        let currentRotationSpeed = 0.003;
+        let snowSpeedMultiplier = 1;
+
+        // ============================================
+        //  PART 1: 交互
+        // ============================================
+        const wishBtn = document.getElementById('wishBtn');
+        const wishInput = document.getElementById('wishInput');
+        const inputGroup = document.getElementById('inputGroup');
+        const successMessage = document.getElementById('successMessage');
+        const consoleContainer = document.querySelector('.wish-console');
+
+        wishBtn.addEventListener('click', triggerHyperMode);
+        wishInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') triggerHyperMode();
+        });
+
+        function triggerHyperMode() {
+            inputGroup.style.opacity = '0';
+            setTimeout(() => {
+                inputGroup.style.display = 'none';
+                successMessage.style.display = 'block';
+                // 许愿后，控制台变亮，边框发光
+                consoleContainer.style.background = 'rgba(255, 255, 255, 0.1)';
+                consoleContainer.style.boxShadow = '0 0 60px rgba(212, 175, 55, 0.6)';
+                consoleContainer.style.border = '2px solid rgba(255, 215, 0, 0.8)';
+            }, 300);
+
+            isHyperMode = true;
+            currentRotationSpeed = CONFIG.rotationSpeed * 5;
+            snowSpeedMultiplier = 6;
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
+        }
+
+        // ============================================
+        //  PART 2: 粒子特效 (保持 V4.0 逻辑)
+        // ============================================
+        const canvas = document.getElementById('christmasCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let snowParticles = [];
+        let rotation = 0;
+
+        const CONFIG = {
+            treeHeight: 360, // 树的高度
+            baseRadius: 150, 
+            branchLayers: 18, 
+            particleCount: 7500, // 增加粒子数
+            ornamentCount: 220, 
+            lightCount: 800, 
+            snowCount: 300, 
+            rotationSpeed: 0.003,
+            colors: {
+                leaf: ['#0f5e2c', '#146B3A', '#197b30', '#2d8a4e'], 
+                ornament: ['#D43D2A', '#FFD700', '#3498DB', '#E74C3C'], 
+                light: '#FFF8DC', 
+                star: '#FFFF00' 
+            }
+        };
+
+        class Point3D {
+            constructor(x, y, z) { this.x = x; this.y = y; this.z = z; }
+            rotateY(angle) {
+                const cos = Math.cos(angle); const sin = Math.sin(angle);
+                const x = this.x * cos - this.z * sin;
+                const z = this.x * sin + this.z * cos;
+                return new Point3D(x, this.y, z);
+            }
+            project(viewWidth, viewHeight, fov, viewDistance) {
+                const factor = fov / (viewDistance + this.z);
+                const x = this.x * factor + viewWidth / 2;
+                const y = this.y * factor + viewHeight / 2;
+                return { x, y, scale: factor };
+            }
+        }
+
+        class Particle {
+            constructor(point, color, size, type) {
+                this.point = point; this.color = color; this.baseSize = size; this.type = type; 
+                this.alpha = 1;
+                this.flashSpeed = Math.random() * 0.03 + 0.01;
+                this.flashOffset = Math.random() * Math.PI * 2;
+            }
+            draw(ctx, projectedPoint) {
+                ctx.beginPath();
+                let currentAlpha = this.alpha;
+                let currentFlashSpeed = this.flashSpeed * (isHyperMode ? 3 : 1);
+                
+                if (this.type === 'light') {
+                    currentAlpha = 0.4 + 0.6 * Math.sin(Date.now() * currentFlashSpeed + this.flashOffset);
+                }
+                ctx.globalAlpha = currentAlpha;
+                ctx.fillStyle = this.color;
+                const size = this.baseSize * projectedPoint.scale;
+                ctx.arc(projectedPoint.x, projectedPoint.y, size, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (this.type === 'light' || this.type === 'star') {
+                    ctx.shadowBlur = (isHyperMode ? 40 : 20) * projectedPoint.scale;
+                    ctx.shadowColor = this.color;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        class Snow {
+            constructor() { this.reset(); this.y = Math.random() * height; }
+            reset() {
+                this.x = Math.random() * width; this.y = -10;
+                this.baseSpeed = Math.random() * 1.5 + 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.drift = Math.random() * 1 - 0.5; this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.y += this.baseSpeed * snowSpeedMultiplier; 
+                this.x += this.drift * snowSpeedMultiplier;
+                if (this.y > height) this.reset();
+            }
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            resize(); createTree(); createSnow();
+            window.addEventListener('resize', resize);
+            currentRotationSpeed = CONFIG.rotationSpeed;
+            animate();
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            if (snowParticles.length === 0) createSnow();
+        }
+
+        function createTree() {
+            particles = [];
+            const H = CONFIG.treeHeight;
+            // 枝叶
+            for (let layer = 0; layer < CONFIG.branchLayers; layer++) {
+                const progress = layer / CONFIG.branchLayers;
+                const yStart = -H/2 + H * progress;
+                const yEnd = yStart + (H / CONFIG.branchLayers) * 1.2; 
+                const countPerLayer = CONFIG.particleCount / CONFIG.branchLayers;
+                for (let i = 0; i < countPerLayer; i++) {
+                    const y = yStart + Math.random() * (yEnd - yStart);
+                    const hNorm = (y + H/2) / H; 
+                    const currentMaxR = CONFIG.baseRadius * Math.pow(hNorm, 0.8);
+                    const r = currentMaxR * Math.sqrt(Math.random()); 
+                    const rJitter = r + (Math.random() - 0.5) * 10;
+                    const angle = Math.random() * Math.PI * 2;
+                    const x = rJitter * Math.cos(angle);
+                    const z = rJitter * Math.sin(angle);
+                    const color = CONFIG.colors.leaf[Math.floor(Math.random() * CONFIG.colors.leaf.length)];
+                    particles.push(new Particle(new Point3D(x, y, z), color, 1.2 + Math.random(), 'leaf'));
+                }
+            }
+            // 装饰
+            for (let i = 0; i < CONFIG.ornamentCount; i++) {
+                const y = (Math.random() - 0.5) * H;
+                const hNorm = (y + H/2) / H;
+                const treeR = CONFIG.baseRadius * Math.pow(hNorm, 0.8);
+                const r = treeR * (0.8 + Math.random() * 0.3);
+                const angle = Math.random() * Math.PI * 2;
+                const x = r * Math.cos(angle);
+                const z = r * Math.sin(angle);
+                const color = CONFIG.colors.ornament[Math.floor(Math.random() * CONFIG.colors.ornament.length)];
+                particles.push(new Particle(new Point3D(x, y, z), color, 3 + Math.random()*2, 'ornament'));
+            }
+            // 彩灯
+            for (let i = 0; i < CONFIG.lightCount; i++) {
+                const p = i / CONFIG.lightCount; 
+                const y = H/2 - H * p; 
+                const hNorm = (y + H/2) / H; 
+                const r = CONFIG.baseRadius * Math.pow(hNorm, 0.8) + 5;
+                const angle = p * Math.PI * 25; 
+                const x = r * Math.cos(angle);
+                const z = r * Math.sin(angle);
+                particles.push(new Particle(new Point3D(x, y, z), CONFIG.colors.light, 2, 'light'));
+            }
+            // 星星
+            for(let i=0; i<60; i++) {
+                const y = -H/2 - Math.random() * 15; 
+                const r = Math.random() * 10;
+                const angle = Math.random() * Math.PI * 2;
+                const x = r * Math.cos(angle);
+                const z = r * Math.sin(angle);
+                particles.push(new Particle(new Point3D(x, y, z), CONFIG.colors.star, 2 + Math.random()*4, 'star'));
+            }
+        }
+
+        function createSnow() {
+            snowParticles = [];
+            for(let i=0; i<CONFIG.snowCount; i++) { snowParticles.push(new Snow()); }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            snowParticles.forEach(snow => { snow.update(); snow.draw(ctx); });
+            rotation += currentRotationSpeed;
+            const fov = 800; const viewDistance = 1000;
+            particles.sort((a, b) => b.point.rotateY(rotation).z - a.point.rotateY(rotation).z);
+            ctx.save();
+            ctx.translate(width / 2, height / 2 + 20); 
+            particles.forEach(p => {
+                const rotatedPoint = p.point.rotateY(rotation);
+                if (rotatedPoint.z > -viewDistance + 50) {
+                    const projected = rotatedPoint.project(0, 0, fov, viewDistance);
+                    p.draw(ctx, projected);
+                }
+            });
+            ctx.restore();
+            requestAnimationFrame(animate);
+        }
+
+        init();
+    </script>
+</body>
+</html>
